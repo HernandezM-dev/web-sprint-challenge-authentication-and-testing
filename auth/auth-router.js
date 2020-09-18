@@ -40,10 +40,8 @@ router.post('/login', (req, res) => {
   if (isValid(req.body)) {
       Users.findBy({ username: username })
           .then(([user]) => {
-              // compare the password the hash stored in the database
               if (user && bcryptjs.compareSync(password, user.password)) {
                   const token = makeJwt(user);
-
                   res.status(200).json({ token });
               } else {
                   res.status(401).json({ message: "Invalid credentials" });
@@ -59,10 +57,9 @@ router.post('/login', (req, res) => {
   }
 });
 
-function makeJwt({ id, username, role }) {
+function makeJwt({ id, username}) {
   const payload = {
       username,
-      role,
       subject: id,
   };
   const config = {
