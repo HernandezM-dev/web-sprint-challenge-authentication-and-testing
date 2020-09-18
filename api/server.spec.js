@@ -1,9 +1,11 @@
 const supertest = require('supertest');
 const server = require('./server.js');
 const db = require('../database/dbConfig.js');
-const { SERVFAIL } = require('dns');
+const auth = require('../auth/authenticate-middleware')
+const sinon = require('sinon')
 
 const userObject = {username:'newUser', password:'testpass'}
+var token = '';
 
 describe("server", () =>{
     describe('env', () =>{
@@ -39,6 +41,10 @@ describe("server", () =>{
     })
         beforeEach(async () =>{
             await db('users').truncate();
+            // const newStub = sinon.stub(auth, 'authenticate')
+            // newStub.callsFake((req, res, next) =>{
+            //     return next();
+            // });
         })
         
         it('/register should take a username&password and return that user and a token', () =>{
@@ -46,12 +52,24 @@ describe("server", () =>{
             .post('/api/auth/register')
             .send(userObject)
             .then(res =>{
+                token = res.body.token
                 expect(res.status).toBe(201)
                 expect(res.body.data).toHaveProperty('id')
                 expect(res.body).toHaveProperty('token')
                 expect(res.body.data.password).toEqual(expect.not.stringMatching("this is my password"))
             })
     })    
+
+    // it('test joke endpoint', () =>{
+    //         return supertest(server)
+    //         .get('/api/jokes')
+    //         .set('authenticate')
+    //         .then(res =>{
+    //             expect(res.status).toBe(200)
+    //         })
+
+    // })
+
         
 
        

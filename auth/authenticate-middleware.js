@@ -3,7 +3,9 @@
   before granting access to the next middleware/route handler
 */
 const jwt = require('jsonwebtoken')
-module.exports = (req, res, next) => {
+
+
+const authenticate = (req, res, next) => {
   const token = req.headers.authorization;
   const secret = process.env.JWT_SECRET || "Jokes Secret"
 
@@ -17,3 +19,5 @@ module.exports = (req, res, next) => {
     res.status(401).json({ message: 'shall not pass!' });
   }
 };
+
+module.exports = authenticate
